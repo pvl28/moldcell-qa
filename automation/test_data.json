@@ -1,0 +1,8 @@
+{
+  "language": "English",
+  "invalid_short_phone": "6912",
+  "dummy_password": "Qa12345",
+  "expected_language_title": "Choose your language.",
+  "expected_login_title": "my moldcell!",
+  "expected_username_format_error": "Your username must be a phone number (without leading 0) or an email address."
+}
