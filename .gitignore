@@ -1,10 +1,9 @@
-.venv/
-__pycache__/
-*.pyc
 .env
 *.apk
 *.aab
 automation/artifacts/*
 !automation/artifacts/.gitkeep
-.pytest_cache/
-node_modules/
+automation/bin/
+automation/obj/
+automation/TestResults/
+.DS_Store

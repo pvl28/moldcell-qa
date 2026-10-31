@@ -1,5 +1,0 @@
-Appium-Python-Client==5.3.1
-selenium==4.36.0
-pytest==8.4.2
-pytest-html==4.2.0
-python-dotenv==1.2.1
