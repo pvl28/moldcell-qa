@@ -10,20 +10,21 @@ public class LoginValidationTests : BaseTest
     public void Login_WithIncompletePhone_ShowsFormatError()
     {
         // Precondition: user is on the login screen (language chosen on a clean install).
-        new LanguagePage(Driver).WaitLoaded().ChooseLanguage(TestData["language"]);
-        var loginPage = new LoginPage(Driver).WaitLoaded();
+        var languagePage = new LanguagePage(Driver, Settings);
+        languagePage.WaitLoaded();
+        var loginPage = languagePage.ChooseLanguage(TestData.Language);
 
         // Action: submit an incomplete number with any password.
-        loginPage.LogIn(TestData["invalid_short_phone"], TestData["dummy_password"]);
+        loginPage.LogIn(TestData.InvalidShortPhone, TestData.DummyPassword);
 
         // Check: inline format error is shown, user stays on the login screen.
         Assert.Multiple(() =>
         {
-            Assert.That(loginPage.TextOf(LoginPage.UsernameError), Is.EqualTo(TestData["expected_username_format_error"]),
+            Assert.That(loginPage.GetUsernameError(), Is.EqualTo(TestData.ExpectedUsernameFormatError),
                 "Wrong or missing validation message for an incomplete phone number");
-            Assert.That(loginPage.TextOf(LoginPage.Username), Is.EqualTo(TestData["invalid_short_phone"]),
+            Assert.That(loginPage.GetUsername(), Is.EqualTo(TestData.InvalidShortPhone),
                 "Entered username should be kept after a validation error");
-            Assert.That(loginPage.IsVisible(LoginPage.Login), Is.True, "User should stay on the login screen");
+            Assert.That(loginPage.IsOpen(), Is.True, "User should stay on the login screen");
         });
     }
 }

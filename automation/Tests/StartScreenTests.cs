@@ -10,21 +10,19 @@ public class StartScreenTests : BaseTest
     public void FirstLaunch_LanguageThenLoginScreen()
     {
         // Precondition: clean app data (noReset=false), notifications permission granted.
-        var languagePage = new LanguagePage(Driver).WaitLoaded();
+        var languagePage = new LanguagePage(Driver, Settings);
+        languagePage.WaitLoaded();
 
-        Assert.That(languagePage.TextOf(LanguagePage.Title), Does.Contain(TestData["expected_language_title"]),
+        Assert.That(languagePage.GetTitle(), Does.Contain(TestData.ExpectedLanguageTitle),
             "Language screen title is not shown on first launch");
-        foreach (var (name, locator) in LanguagePage.LanguageRadio)
-            Assert.That(languagePage.IsVisible(locator), Is.True, $"Language option '{name}' is not visible");
+        Assert.That(languagePage.GetMissingLanguageOptions(), Is.Empty, "Language options are not visible");
 
         // Action: choose language and continue.
-        languagePage.ChooseLanguage(TestData["language"]);
+        var loginPage = languagePage.ChooseLanguage(TestData.Language);
 
         // Check: login screen with all key elements.
-        var loginPage = new LoginPage(Driver).WaitLoaded();
-        Assert.That(loginPage.TextOf(LoginPage.Title), Is.EqualTo(TestData["expected_login_title"]),
+        Assert.That(loginPage.GetTitle(), Is.EqualTo(TestData.ExpectedLoginTitle),
             "Unexpected login screen title");
-        var missing = LoginPage.KeyElements.Where(e => !loginPage.IsVisible(e.Value)).Select(e => e.Key).ToList();
-        Assert.That(missing, Is.Empty, "Key elements missing on login screen");
+        Assert.That(loginPage.GetMissingKeyElements(), Is.Empty, "Key elements missing on login screen");
     }
 }

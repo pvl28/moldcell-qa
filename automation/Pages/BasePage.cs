@@ -9,32 +9,41 @@ namespace MoldcellTests.Pages;
 public abstract class BasePage
 {
     protected readonly AndroidDriver Driver;
+    protected readonly TestSettings Settings;
     private readonly WebDriverWait _wait;
 
-    protected BasePage(AndroidDriver driver)
+    protected BasePage(AndroidDriver driver, TestSettings settings)
     {
         Driver = driver;
-        _wait = new WebDriverWait(driver, Settings.ExplicitWait);
+        Settings = settings;
+        _wait = new WebDriverWait(driver, settings.ExplicitWait);
         _wait.IgnoreExceptionTypes(typeof(NoSuchElementException), typeof(StaleElementReferenceException));
     }
+
+    /// <summary>Element that is visible only while this page is open.</summary>
+    protected abstract By LoadedMarker { get; }
+
+    public void WaitLoaded() => Find(LoadedMarker);
+
+    public bool IsOpen() => IsVisible(LoadedMarker);
 
     /// <summary>Compose testTags are exposed as bare resource-ids (no package prefix), so By.Id cannot be used for them.</summary>
     protected static By ByResourceId(string resourceId) =>
         MobileBy.AndroidUIAutomator($"new UiSelector().resourceId(\"{resourceId}\")");
 
-    public IWebElement Find(By locator)
+    protected IWebElement Find(By locator)
     {
         _wait.Message = $"Element not visible: {locator}";
         return _wait.Until(d => d.FindElement(locator) is { Displayed: true } e ? e : null)!;
     }
 
-    public void Tap(By locator)
+    protected void Tap(By locator)
     {
         _wait.Message = $"Element not clickable: {locator}";
         _wait.Until(d => d.FindElement(locator) is { Displayed: true, Enabled: true } e ? e : null)!.Click();
     }
 
-    public void Type(By locator, string text)
+    protected void Type(By locator, string text)
     {
         var field = Find(locator);
         field.Click();
@@ -42,11 +51,23 @@ public abstract class BasePage
         field.SendKeys(text);
     }
 
-    public string TextOf(By locator) => Find(locator).Text;
+    protected string TextOf(By locator) => Find(locator).Text;
 
-    public bool IsVisible(By locator) => Find(locator).Displayed;
+    /// <summary>Waits up to the explicit timeout; returns false instead of throwing when the element does not appear.</summary>
+    protected bool IsVisible(By locator)
+    {
+        try
+        {
+            Find(locator);
+            return true;
+        }
+        catch (WebDriverTimeoutException)
+        {
+            return false;
+        }
+    }
 
-    public void HideKeyboard()
+    protected void HideKeyboard()
     {
         if (Driver.IsKeyboardShown())
             Driver.HideKeyboard();

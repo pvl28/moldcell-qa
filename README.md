@@ -14,9 +14,14 @@ manual/
 automation/
   MoldcellTests.csproj         NUnit-проект (.NET 8, Appium.WebDriver 9, Selenium.Support)
   test_data.json               тестовые данные и ожидаемые тексты (не в коде тестов)
-  Support/Settings.cs          параметры из переменных окружения, загрузка test_data.json
-  Support/BaseTest.cs          сессия Appium на каждый тест, скриншот + page source при падении
-  Pages/                       Page Object: все локаторы здесь
+  Support/TestSettings.cs      неизменяемые параметры из переменных окружения
+  Support/TestData.cs          типизированная модель test_data.json
+  Support/TestDataLoader.cs    загрузка test_data.json (значения переопределяются через env)
+  Support/Language.cs          язык приложения (enum): страница выбора языка и тестовые данные
+  Support/DriverFactory.cs     создание сессии Appium (capabilities)
+  Support/FailureArtifacts.cs  скриншот + page source при падении теста
+  Support/BaseTest.cs          жизненный цикл теста: новая сессия Appium на каждый тест
+  Pages/                       Page Object: локаторы приватные, тесты работают только через методы страниц
   Tests/                       StartScreenTests.cs (позитивный), LoginValidationTests.cs (негативный)
 ```
 
